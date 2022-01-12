@@ -1,29 +1,31 @@
 from fastapi import APIRouter
 from config.db import conn
-from models.enigmas import enigmas
-from schemas.enigmas import Enigma
+from src.enigmas.models.enigmas import enigmas
+from src.enigmas.schemas.enigmas import Enigma
 from typing import List
 from starlette.status import HTTP_204_NO_CONTENT
 from sqlalchemy import func, select
 
 from cryptography.fernet import Fernet
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/enigmas",
+    tags=["enigmas"],
+    responses={404: {"description": "Not found"}},
+)
 key = Fernet.generate_key()
 f = Fernet(key)
 
 @router.get(
-    "/enigmas",
-    tags=["enigmas"],
+    "/",
     response_model=List[Enigma],
     description="Get a list of all enigmas",
 )
-def get_quests():
+def get_enigmas():
     return conn.execute(enigmas.select()).fetchall()
 
 @router.get(
-    "/enigmas/{id}",
-    tags=["enigmas"],
+    "/{id}",
     response_model=Enigma,
     description="Get a single enigma by Id",
 )
@@ -31,8 +33,8 @@ def get_enigmas(id: str):
     return conn.execute(enigmas.select().where(enigmas.c.id == id)).first()
 
 
-@router.post("/", tags=["enigmas"], response_model=Enigma, description="Create a new Enigma")
-def create_pictures(enigma: Enigma):
+@router.post("/", response_model=Enigma, description="Create a new Enigma")
+def create_enigma(enigma: Enigma):
     new_enigma = {"id_quest": enigma.id_quest, "title": enigma.title, "id_previous": enigma.id_previous, 
                  "id_next": enigma.id_next,"content": enigma.content, "response": enigma.response, "indice": enigma.indice}
     result = conn.execute(enigmas.insert().values(new_enigma))
@@ -40,7 +42,7 @@ def create_pictures(enigma: Enigma):
 
 
 @router.put(
-    "enigmas/{id}", tags=["pictures"], response_model=Enigma, description="Update a Enigma by Id"
+    "/{id}", response_model=Enigma, description="Update a Enigma by Id"
 )
 def update_enigma(enigma: Enigma, id: int):
     conn.execute(
@@ -51,7 +53,7 @@ def update_enigma(enigma: Enigma, id: int):
     return conn.execute(enigmas.select().where(enigmas.c.id == id)).first()
 
 
-@router.delete("/{id}", tags=["enigmas"], status_code=HTTP_204_NO_CONTENT)
-def delete_quest(id: int):
+@router.delete("/{id}", status_code=HTTP_204_NO_CONTENT)
+def delete_enigma(id: int):
     conn.execute(enigmas.delete().where(enigmas.c.id == id))
     return conn.execute(enigmas.select().where(enigmas.c.id == id)).first()

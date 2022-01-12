@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from routes.quests import router as quest
-from routes.pictures import router as picture
-from routes.enigmas import router as enigma
+from src.quests.routes.main import router as quest
+from src.pictures.routes.main import router as picture
+from src.enigmas.routes.main import router as enigma
 from config.openapi import tags_metadata
 
 app = FastAPI(

@@ -1,30 +1,34 @@
 from fastapi import APIRouter
 from config.db import conn
-from models.pictures import pictures
-from schemas.pictures import Picture
+from src.pictures.models.pictures import pictures
+from src.pictures.schemas.pictures import Picture
 from typing import List
 from starlette.status import HTTP_204_NO_CONTENT
 from sqlalchemy import func, select
 
 from cryptography.fernet import Fernet
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/pictures",
+    tags=["pictures"],
+    responses={404: {"description": "Not found"}},
+)
+
+
 key = Fernet.generate_key()
 f = Fernet(key)
 
 
 @router.get(
-    "/pictures",
-    tags=["pictures"],
+    "/",
     response_model=List[Picture],
     description="Get a list of all pictures",
 )
-def get_quests():
+def get_pictures():
     return conn.execute(pictures.select()).fetchall()
 
 @router.get(
-    "/pictures/{id}",
-    tags=["pictures"],
+    "/{id}",
     response_model=Picture,
     description="Get a single picture by Id",
 )
@@ -32,7 +36,7 @@ def get_pictures(id: str):
     return conn.execute(pictures.select().where(pictures.c.id == id)).first()
 
 
-@router.post("/", tags=["pictures"], response_model=Picture, description="Create a new picture")
+@router.post("/", response_model=Picture, description="Create a new picture")
 def create_pictures(picture: Picture):
     new_picture = {"id_enigma": picture.id_enigma, "url": picture.url, "order": picture.order}
     result = conn.execute(pictures.insert().values(new_picture))
@@ -40,9 +44,9 @@ def create_pictures(picture: Picture):
 
 
 @router.put(
-    "pictures/{id}", tags=["pictures"], response_model=Picture, description="Update a picture by Id"
+    "/{id}", response_model=Picture, description="Update a picture by Id"
 )
-def update_quest(picture: Picture, id: int):
+def update_pictures(picture: Picture, id: int):
     conn.execute(
         pictures.update()
         .values(id_enigma=picture.id_enigma, url=picture.url, order=picture.order)
@@ -51,7 +55,7 @@ def update_quest(picture: Picture, id: int):
     return conn.execute(pictures.select().where(pictures.c.id == id)).first()
 
 
-@router.delete("/{id}", tags=["pictures"], status_code=HTTP_204_NO_CONTENT)
-def delete_quest(id: int):
+@router.delete("/{id}", status_code=HTTP_204_NO_CONTENT)
+def delete_pictures(id: int):
     conn.execute(pictures.delete().where(pictures.c.id == id))
     return conn.execute(pictures.select().where(pictures.c.id == id)).first()

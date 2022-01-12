@@ -3,7 +3,7 @@ from sqlalchemy.sql.sqltypes import Integer, String, Text
 from config.db import meta, engine
 
 enigmas = Table(
-    "enigmas",
+    "enigma",
     meta,
     Column("id", Integer, primary_key=True),
     Column("id_quest",Integer, ForeignKey("quest.id"), nullable=False),
