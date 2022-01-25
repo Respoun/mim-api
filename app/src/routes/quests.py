@@ -1,10 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from config.db import conn
-from src.quests.models.quests import quests
-from src.quests.schema.quests import Quest
+from src.models.quests import quests
+from src.schemas.quests import Quest
 from typing import List
 from starlette.status import HTTP_204_NO_CONTENT
 from sqlalchemy import func, select
+from fastapi_simple_security import api_key_security
 
 from cryptography.fernet import Fernet
 
@@ -19,7 +20,8 @@ f = Fernet(key)
 
 
 @router.get(
-    "/",
+    "",
+    dependencies=[Depends(api_key_security)],
     tags=["quests"],
     response_model=List[Quest],
     description="Get a list of all quests",
@@ -37,7 +39,7 @@ def get_quests(id: str):
     return conn.execute(quests.select().where(quests.c.id == id)).first()
 
 
-@router.post("/", response_model=Quest, description="Create a new quest")
+@router.post("", response_model=Quest, description="Create a new quest")
 def create_quest(quest: Quest):
     new_quest = {"title": quest.title}
     result = conn.execute(quests.insert().values(new_quest))
