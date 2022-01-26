@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Table
 from sqlalchemy.sql.sqltypes import Integer, String
-from config.db import meta, engine
+from app.config.db import meta, engine
 
 quests = Table(
     "quest",
