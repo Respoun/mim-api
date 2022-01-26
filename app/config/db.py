@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine, MetaData
 import os
 
-engine = create_engine(os.getenv('DB'))
+URI = os.environ['DB']
+engine = create_engine(URI)
 
 meta = MetaData()
 conn = engine.connect()
