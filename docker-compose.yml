@@ -1,9 +1,6 @@
-version: '3'
-services :
-  web :
-    build : .
-    environment:
-      DB: "to_change"
-      FASTAPI_SIMPLE_SECURITY_SECRET: "to_change"
-    ports :
-      - 80:80
+version: "3.9"
+services:
+  web:
+    build: .
+    volumes:
+      - ./app:/app
