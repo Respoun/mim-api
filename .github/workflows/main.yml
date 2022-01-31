@@ -17,5 +17,5 @@ jobs:
           heroku_email: ${{secrets.HEROKU_API_MAIL}}
           usedocker: true
         env:
-          DB_URI: ${{ secrets.DB }}
-          FASTAPI_SIMPLE_SECURITY_SECRET: ${{ secrets.FASTAPI_SIMPLE_SECURITY_SECRET }}
+          DB_URI: ${{secrets.DB}}
+          FASTAPI_SIMPLE_SECURITY_SECRET: ${{secrets.FASTAPI_SIMPLE_SECURITY_SECRET}}
