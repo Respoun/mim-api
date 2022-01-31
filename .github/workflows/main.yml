@@ -1,29 +1,5 @@
 
 
-# name: Deploy
-
-# on:
-#   push:
-#     branches:
-#       - main
-
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     environment: deploy
-#     steps:
-#       - uses: actions/checkout@v2
-#       - uses: akhileshns/heroku-deploy@v3.12.12
-#         with:
-#           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-#           heroku_app_name: "mimapi"
-#           heroku_email: ${{secrets.HEROKU_API_MAIL}}
-#           usedocker: true
-#         env:
-#           DB_URI: ${{secrets.DB}}
-#           FASTAPI_SIMPLE_SECURITY_SECRET: ${{secrets.FASTAPI_SIMPLE_SECURITY_SECRET}}
-
-
 name: Deploy
 
 on:
@@ -32,33 +8,57 @@ on:
       - main
 
 jobs:
-  custom-deploy:
+  build:
     runs-on: ubuntu-latest
+    environment: deploy
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
         with:
-          fetch-depth: 0
-      - name: Create env file
-        run: |
-          touch .env
-          echo DB_URI="${{ secrets.DB }}" >> .env
-          echo FASTAPI_SIMPLE_SECURITY_SECRET=${{ secrets.API_KEY }} >> .env
-          cat .env
-      - name: Heroku login credentials
-        run: |
-          cat > ~/.netrc <<EOF
-            machine api.heroku.com
-              login $HEROKU_EMAIL
-              password $HEROKU_API_KEY
-            machine git.heroku.com
-              login $HEROKU_EMAIL
-              password $HEROKU_API_KEY
-          EOF
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "mimapi"
+          heroku_email: ${{secrets.HEROKU_API_MAIL}}
+          usedocker: true
         env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_EMAIL: ${{ secrets.HEROKU_API_MAIL }}
-      - name: Add Heroku remote
-        run: heroku git:remote --app mimapi
-      - name: Push to Heroku
-        run: git push heroku master
+          DB_URI: ${{secrets.DB}}
+          FASTAPI_SIMPLE_SECURITY_SECRET: ${{secrets.FASTAPI_SIMPLE_SECURITY_SECRET}}
+
+
+# name: Deploy
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   custom-deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Check out repository
+#         uses: actions/checkout@v2
+#         with:
+#           fetch-depth: 0
+#       - name: Create env file
+#         run: |
+#           touch .env
+#           echo DB_URI="${{ secrets.DB }}" >> .env
+#           echo FASTAPI_SIMPLE_SECURITY_SECRET=${{ secrets.API_KEY }} >> .env
+#           cat .env
+#       - name: Heroku login credentials
+#         run: |
+#           cat > ~/.netrc <<EOF
+#             machine api.heroku.com
+#               login $HEROKU_EMAIL
+#               password $HEROKU_API_KEY
+#             machine git.heroku.com
+#               login $HEROKU_EMAIL
+#               password $HEROKU_API_KEY
+#           EOF
+#         env:
+#           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+#           HEROKU_EMAIL: ${{ secrets.HEROKU_API_MAIL }}
+#       - name: Add Heroku remote
+#         run: heroku git:remote --app mimapi
+#       - name: Push to Heroku
+#         run: git push heroku master
