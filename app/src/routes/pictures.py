@@ -47,7 +47,6 @@ def get_pictures(id: str):
 def get_pictures_by_enigma_id(id_enigma: int):
     return conn.execute(pictures.select().where(pictures.c.id_enigma == id_enigma)).first()
 
-
 @router.post(
     "",
     dependencies=[Depends(api_key_security)], 
